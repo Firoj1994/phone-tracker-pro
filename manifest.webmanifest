@@ -1,0 +1,10 @@
+{
+  "name": "Phone Tracker Pro",
+  "short_name": "Phone Tracker",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4f6fb",
+  "theme_color": "#172554",
+  "description": "Phone price, stock and offer tracker",
+  "icons": [{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}

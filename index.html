@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#172554">
+<meta name="description" content="Phone price, stock and offer tracker">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>Phone Tracker Pro</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#172033;background:#f4f6fb}
+*{box-sizing:border-box}body{margin:0}.top{background:#172554;color:white;padding:22px 18px 26px;border-radius:0 0 24px 24px}
+.top small{opacity:.8}.top h1{margin:5px 0;font-size:25px}.wrap{max-width:720px;margin:auto;padding:16px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:-4px}
+.card{background:white;border-radius:16px;padding:16px;box-shadow:0 3px 14px #17255412}
+.num{font-size:27px;font-weight:750}.muted{color:#68738a;font-size:13px}
+h2{font-size:18px;margin:22px 0 10px}.btn{border:0;background:#2447a8;color:white;border-radius:12px;padding:13px 16px;font-weight:650;font-size:15px;width:100%}
+input,select{width:100%;padding:13px;border:1px solid #d7ddeb;border-radius:11px;background:white;font-size:15px;margin:5px 0 12px}
+label{font-size:13px;font-weight:650}.item{display:flex;justify-content:space-between;gap:12px;align-items:center;border-bottom:1px solid #edf0f5;padding:13px 0}
+.item:last-child{border:0}.tag{font-size:11px;background:#eef2ff;color:#29449a;padding:5px 8px;border-radius:20px;white-space:nowrap}
+.note{background:#fff8e7;border:1px solid #f4dfa8;padding:12px;border-radius:12px;font-size:13px;line-height:1.5}
+footer{text-align:center;color:#7b8497;font-size:12px;padding:25px 0}
+</style>
+</head>
+<body>
+<header class="top"><small>ANDROID PRICE & STOCK WATCHER</small><h1>Phone Tracker Pro</h1><div>দাম কমা, স্টক ফেরা ও ভালো অফার নজরে রাখুন</div></header>
+<main class="wrap">
+<section class="stats">
+ <div class="card"><div class="num" id="count">0</div><div class="muted">Watchlist ফোন</div></div>
+ <div class="card"><div class="num" id="alerts">0</div><div class="muted">নতুন অ্যালার্ট</div></div>
+</section>
+<h2>নতুন ফোন যোগ করুন</h2>
+<section class="card">
+ <form id="addForm">
+  <label>ফোনের নাম / মডেল</label><input id="name" required placeholder="যেমন: iQOO Z10R 8/256">
+  <label>শপিং সাইট</label><select id="site"><option>Amazon India</option><option>Flipkart</option><option>Croma</option><option>Reliance Digital</option><option>Other</option></select>
+  <label>পণ্যের লিংক</label><input id="url" type="url" required placeholder="https://...">
+  <label>যে দামে অ্যালার্ট চান (ঐচ্ছিক, ₹)</label><input id="target" type="number" min="1" placeholder="যেমন: 15000">
+  <button class="btn" type="submit">＋ Watchlist-এ যোগ করুন</button>
+ </form>
+</section>
+<h2>আপনার Watchlist</h2>
+<section class="card" id="list"><div class="muted">এখনও কোনো ফোন যোগ করা হয়নি।</div></section>
+<h2>অ্যালার্ট সেটআপ</h2>
+<section class="card">
+ <p><b>Android:</b> Chrome-এ হোস্ট করা HTTPS অ্যাপ ইনস্টল হলে নোটিফিকেশন অনুমতি ও Push সার্ভিস আলাদাভাবে সেটআপ করতে হবে।</p>
+ <p><b>Telegram:</b> Telegram Bot ও নিরাপদ সার্ভার সংযোগ লাগবে। Bot token কখনো এখানে বা প্রকাশ্যে দেবেন না।</p>
+ <div class="note">এই সংস্করণে Watchlist আপনার এই ব্রাউজারেই সেভ হয়। এখনো লাইভ দাম/স্টক যাচাই বা অ্যালার্ট পাঠায় না। দোকানের অনুমোদিত API বা ডেটা ফিড যুক্ত করার পর লাইভ মনিটরিং চালু হবে।</div>
+</section>
+<footer>Phone Tracker Pro · Starter PWA · v0.1</footer>
+</main>
+<script>
+const KEY='ptp-watchlist-v1';
+let items=JSON.parse(localStorage.getItem(KEY)||'[]');
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function render(){
+ document.getElementById('count').textContent=items.length;
+ document.getElementById('alerts').textContent='0';
+ const el=document.getElementById('list');
+ if(!items.length){el.innerHTML='<div class="muted">এখনও কোনো ফোন যোগ করা হয়নি।</div>';return;}
+ el.innerHTML=items.map((x,i)=>`<div class="item"><div><b>${esc(x.name)}</b><div class="muted">${esc(x.site)} · লক্ষ্য: ${x.target?'₹'+esc(x.target):'নির্ধারণ করা হয়নি'}</div><a href="${esc(x.url)}" target="_blank" rel="noopener">পণ্যের পেজ খুলুন</a></div><button data-del="${i}" aria-label="Delete" style="border:0;background:#fee2e2;color:#991b1b;border-radius:9px;padding:8px 10px">মুছুন</button></div>`).join('');
+ el.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{items.splice(Number(b.dataset.del),1);save();}));
+}
+function save(){localStorage.setItem(KEY,JSON.stringify(items));render();}
+document.getElementById('addForm').addEventListener('submit',e=>{
+ e.preventDefault();
+ const name=document.getElementById('name').value.trim(),url=document.getElementById('url').value.trim();
+ if(!/^https:\/\//i.test(url)){alert('নিরাপত্তার জন্য https:// লিংক দিন।');return;}
+ items.push({name,site:document.getElementById('site').value,url,target:document.getElementById('target').value||null});
+ save();e.target.reset();
+});
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
+render();
+</script>
+</body></html>
